@@ -18,7 +18,7 @@ def inputFood():
 	return food
 def chooseFood(food):
 	l=len(food)
-	a=random.randint(0,l)
+	a=random.randint(0,l-1)
 	print('OH MY GOD！吃它！！！',end='')
 	print(food[a])
 

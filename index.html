@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>今天吃什么？</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .container {
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+    padding: 40px 32px;
+    width: 100%;
+    max-width: 480px;
+  }
+
+  h1 {
+    text-align: center;
+    font-size: 28px;
+    color: #333;
+    margin-bottom: 8px;
+  }
+
+  .subtitle {
+    text-align: center;
+    color: #888;
+    font-size: 14px;
+    margin-bottom: 28px;
+  }
+
+  .input-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+
+  input[type="text"] {
+    flex: 1;
+    padding: 12px 16px;
+    border: 2px solid #f0f0f0;
+    border-radius: 12px;
+    font-size: 15px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  input[type="text"]:focus {
+    border-color: #fcb69f;
+  }
+
+  button {
+    cursor: pointer;
+    border: none;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 600;
+    transition: transform 0.1s, box-shadow 0.2s;
+  }
+
+  button:active {
+    transform: scale(0.97);
+  }
+
+  .add-btn {
+    padding: 12px 20px;
+    background: #ffb088;
+    color: #fff;
+  }
+
+  .add-btn:hover {
+    background: #ff9c6a;
+  }
+
+  .food-list {
+    list-style: none;
+    margin-bottom: 20px;
+    max-height: 240px;
+    overflow-y: auto;
+  }
+
+  .food-list:empty::before {
+    content: "还没有添加食物，先输入几个吧~";
+    display: block;
+    text-align: center;
+    color: #bbb;
+    padding: 24px 0;
+    font-size: 14px;
+  }
+
+  .food-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: #faf7f4;
+    border-radius: 10px;
+    margin-bottom: 8px;
+    font-size: 15px;
+    color: #444;
+    animation: slideIn 0.25s ease;
+  }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .delete-btn {
+    background: transparent;
+    color: #c66;
+    padding: 4px 10px;
+    font-size: 18px;
+    line-height: 1;
+  }
+
+  .delete-btn:hover {
+    background: #fde;
+  }
+
+  .count {
+    text-align: center;
+    color: #888;
+    font-size: 13px;
+    margin-bottom: 16px;
+  }
+
+  .choose-btn {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, #ff7e5f, #feb47b);
+    color: #fff;
+    font-size: 17px;
+    box-shadow: 0 6px 16px rgba(255, 126, 95, 0.35);
+  }
+
+  .choose-btn:hover {
+    box-shadow: 0 8px 20px rgba(255, 126, 95, 0.45);
+  }
+
+  .choose-btn:disabled {
+    background: #ddd;
+    box-shadow: none;
+    cursor: not-allowed;
+  }
+
+  .result {
+    margin-top: 24px;
+    text-align: center;
+    min-height: 60px;
+  }
+
+  .result-rolling {
+    font-size: 22px;
+    color: #ff7e5f;
+    font-weight: 600;
+    animation: shake 0.15s infinite;
+  }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-3px); }
+    75% { transform: translateX(3px); }
+  }
+
+  .result-final {
+    padding: 20px;
+    background: linear-gradient(135deg, #fff5e1, #ffe0c0);
+    border-radius: 14px;
+    animation: pop 0.4s ease;
+  }
+
+  @keyframes pop {
+    0% { transform: scale(0.6); opacity: 0; }
+    60% { transform: scale(1.08); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  .result-label {
+    font-size: 14px;
+    color: #c0844a;
+    margin-bottom: 6px;
+  }
+
+  .result-food {
+    font-size: 28px;
+    font-weight: 700;
+    color: #d4602a;
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <h1>🍜 今天吃什么？</h1>
+    <p class="subtitle">把候选食物加进来，让命运来决定</p>
+
+    <div class="input-row">
+      <input type="text" id="foodInput" placeholder="输入食物名字，按回车添加" autocomplete="off">
+      <button class="add-btn" id="addBtn">添加</button>
+    </div>
+
+    <ul class="food-list" id="foodList"></ul>
+    <p class="count" id="count"></p>
+
+    <button class="choose-btn" id="chooseBtn" disabled>帮我选！</button>
+
+    <div class="result" id="result"></div>
+  </div>
+
+<script>
+  const foodInput = document.getElementById('foodInput');
+  const addBtn = document.getElementById('addBtn');
+  const foodList = document.getElementById('foodList');
+  const countEl = document.getElementById('count');
+  const chooseBtn = document.getElementById('chooseBtn');
+  const resultEl = document.getElementById('result');
+
+  let foods = [];
+
+  function render() {
+    foodList.innerHTML = '';
+    foods.forEach((food, idx) => {
+      const li = document.createElement('li');
+      li.className = 'food-item';
+
+      const span = document.createElement('span');
+      span.textContent = food;
+
+      const btn = document.createElement('button');
+      btn.className = 'delete-btn';
+      btn.textContent = '×';
+      btn.title = '删除';
+      btn.addEventListener('click', () => {
+        foods.splice(idx, 1);
+        render();
+      });
+
+      li.appendChild(span);
+      li.appendChild(btn);
+      foodList.appendChild(li);
+    });
+
+    countEl.textContent = foods.length > 0 ? `一共 ${foods.length} 种选项` : '';
+    chooseBtn.disabled = foods.length === 0;
+  }
+
+  function addFood() {
+    const value = foodInput.value.trim();
+    if (!value) return;
+    if (foods.includes(value)) {
+      foodInput.value = '';
+      return;
+    }
+    foods.push(value);
+    foodInput.value = '';
+    render();
+    foodInput.focus();
+  }
+
+  function chooseFood() {
+    if (foods.length === 0) return;
+    chooseBtn.disabled = true;
+    resultEl.innerHTML = '<div class="result-rolling">🎲 请稍等...</div>';
+
+    let ticks = 0;
+    const maxTicks = 14;
+    const rolling = setInterval(() => {
+      const pick = foods[Math.floor(Math.random() * foods.length)];
+      resultEl.innerHTML = `<div class="result-rolling">🎲 ${pick}</div>`;
+      ticks++;
+      if (ticks >= maxTicks) {
+        clearInterval(rolling);
+        const final = foods[Math.floor(Math.random() * foods.length)];
+        resultEl.innerHTML = `
+          <div class="result-final">
+            <div class="result-label">OH MY GOD！吃它！！！</div>
+            <div class="result-food">${final}</div>
+          </div>
+        `;
+        chooseBtn.disabled = false;
+      }
+    }, 80);
+  }
+
+  addBtn.addEventListener('click', addFood);
+  foodInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') addFood();
+  });
+  chooseBtn.addEventListener('click', chooseFood);
+
+  render();
+</script>
+</body>
+</html>
