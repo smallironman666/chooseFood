@@ -1,0 +1,28 @@
+services:
+  pocketbase:
+    image: ghcr.io/muchobien/pocketbase:latest
+    container_name: choosefood-pocketbase
+    restart: unless-stopped
+    ports:
+      - "8090:8090"
+    volumes:
+      - ./pb_data:/pb/pb_data
+      - ./pb_migrations:/pb/pb_migrations
+    networks:
+      - choosefood
+
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: choosefood-cloudflared
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run
+    environment:
+      - TUNNEL_TOKEN=${TUNNEL_TOKEN}
+    networks:
+      - choosefood
+    depends_on:
+      - pocketbase
+
+networks:
+  choosefood:
+    driver: bridge
