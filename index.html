@@ -21,29 +21,29 @@
     background: #fff;
     border-radius: 20px;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
-    padding: 40px 32px;
+    padding: 36px 28px;
     width: 100%;
     max-width: 480px;
   }
 
   h1 {
     text-align: center;
-    font-size: 28px;
+    font-size: 26px;
     color: #333;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
   }
 
   .subtitle {
     text-align: center;
     color: #888;
-    font-size: 14px;
-    margin-bottom: 28px;
+    font-size: 13px;
+    margin-bottom: 22px;
   }
 
   .input-row {
     display: flex;
     gap: 8px;
-    margin-bottom: 20px;
+    margin-bottom: 16px;
   }
 
   input[type="text"] {
@@ -66,7 +66,7 @@
     border-radius: 12px;
     font-size: 15px;
     font-weight: 600;
-    transition: transform 0.1s, box-shadow 0.2s;
+    transition: transform 0.1s, box-shadow 0.2s, opacity 0.2s, background 0.2s;
   }
 
   button:active {
@@ -83,20 +83,69 @@
     background: #ff9c6a;
   }
 
+  details.suggestions {
+    margin-bottom: 16px;
+  }
+
+  details.suggestions summary {
+    cursor: pointer;
+    color: #c0844a;
+    font-size: 13px;
+    padding: 6px 4px;
+    user-select: none;
+    list-style: none;
+  }
+
+  details.suggestions summary::-webkit-details-marker { display: none; }
+
+  details.suggestions summary::before {
+    content: '▸ ';
+    display: inline-block;
+    transition: transform 0.2s;
+  }
+  details.suggestions[open] summary::before {
+    transform: rotate(90deg);
+  }
+
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 10px 4px 0;
+  }
+
+  .chip {
+    padding: 6px 12px;
+    background: #fff5e1;
+    color: #c0844a;
+    border-radius: 16px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .chip:hover:not(:disabled) {
+    background: #ffe0c0;
+  }
+
+  .chip:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+
   .food-list {
     list-style: none;
-    margin-bottom: 20px;
-    max-height: 240px;
+    margin-bottom: 12px;
+    max-height: 220px;
     overflow-y: auto;
   }
 
   .food-list:empty::before {
-    content: "还没有添加食物，先输入几个吧~";
+    content: "列表是空的，点上面的推荐或自己输入~";
     display: block;
     text-align: center;
     color: #bbb;
-    padding: 24px 0;
-    font-size: 14px;
+    padding: 20px 0;
+    font-size: 13px;
   }
 
   .food-item {
@@ -106,7 +155,7 @@
     padding: 10px 16px;
     background: #faf7f4;
     border-radius: 10px;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
     font-size: 15px;
     color: #444;
     animation: slideIn 0.25s ease;
@@ -132,8 +181,8 @@
   .count {
     text-align: center;
     color: #888;
-    font-size: 13px;
-    margin-bottom: 16px;
+    font-size: 12px;
+    margin-bottom: 12px;
   }
 
   .choose-btn {
@@ -143,20 +192,50 @@
     color: #fff;
     font-size: 17px;
     box-shadow: 0 6px 16px rgba(255, 126, 95, 0.35);
+    margin-bottom: 10px;
   }
 
-  .choose-btn:hover {
+  .choose-btn:hover:not(:disabled) {
     box-shadow: 0 8px 20px rgba(255, 126, 95, 0.45);
   }
-
   .choose-btn:disabled {
     background: #ddd;
     box-shadow: none;
     cursor: not-allowed;
   }
 
+  .surprise-btn {
+    width: 100%;
+    padding: 14px;
+    background: #fff;
+    color: #ff7e5f;
+    border: 2px solid #feb47b;
+    font-size: 15px;
+  }
+
+  .surprise-btn:hover:not(:disabled) { background: #fff5e1; }
+  .surprise-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .actions {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 14px;
+  }
+
+  .link-btn {
+    background: transparent;
+    color: #999;
+    font-size: 12px;
+    padding: 4px 8px;
+    font-weight: 400;
+    text-decoration: underline;
+  }
+
+  .link-btn:hover { color: #666; }
+
   .result {
-    margin-top: 24px;
+    margin-top: 22px;
     text-align: center;
     min-height: 60px;
   }
@@ -188,13 +267,13 @@
   }
 
   .result-label {
-    font-size: 14px;
+    font-size: 13px;
     color: #c0844a;
     margin-bottom: 6px;
   }
 
   .result-food {
-    font-size: 28px;
+    font-size: 26px;
     font-weight: 700;
     color: #d4602a;
   }
@@ -203,32 +282,85 @@
 <body>
   <div class="container">
     <h1>🍜 今天吃什么？</h1>
-    <p class="subtitle">把候选食物加进来，让命运来决定</p>
+    <p class="subtitle">列表存在浏览器里，下次打开还在</p>
 
     <div class="input-row">
       <input type="text" id="foodInput" placeholder="输入食物名字，按回车添加" autocomplete="off">
       <button class="add-btn" id="addBtn">添加</button>
     </div>
 
+    <details class="suggestions" open>
+      <summary>推荐添加（点一下进列表）</summary>
+      <div class="chips" id="suggestionChips"></div>
+    </details>
+
     <ul class="food-list" id="foodList"></ul>
     <p class="count" id="count"></p>
 
-    <button class="choose-btn" id="chooseBtn" disabled>帮我选！</button>
+    <button class="choose-btn" id="chooseBtn">帮我选！</button>
+    <button class="surprise-btn" id="surpriseBtn">🎁 Surprise Me（从常见食物里随机抽）</button>
+
+    <div class="actions">
+      <button class="link-btn" id="resetBtn">恢复默认</button>
+      <button class="link-btn" id="clearBtn">清空全部</button>
+    </div>
 
     <div class="result" id="result"></div>
   </div>
 
 <script>
+  const STORAGE_KEY = 'chooseFood.foods';
+
+  const DEFAULT_FOODS = [
+    '麻辣烫', '兰州拉面', '黄焖鸡米饭', '沙县小吃', '螺蛳粉',
+    '火锅', '烧烤', '炒饭', '盖浇饭', '米线'
+  ];
+
+  const SURPRISE_POOL = [
+    '麻辣烫', '兰州拉面', '黄焖鸡米饭', '沙县小吃', '螺蛳粉', '火锅', '烧烤',
+    '寿司', '披萨', '汉堡', '炒饭', '盖浇饭', '米线', '馄饨', '饺子',
+    '麻辣香锅', '酸菜鱼', '日料', '韩餐', '泰餐', '炒面', '凉皮',
+    '肉夹馍', '煎饼果子', '小笼包', '生煎包', '锅贴', '羊肉泡馍',
+    '麻婆豆腐', '宫保鸡丁', '红烧肉', '糖醋里脊', '回锅肉', '水煮鱼',
+    '担担面', '炸酱面', '热干面', '重庆小面', '过桥米线',
+    '鱼香肉丝', '烤肉', '寿喜烧', '关东煮', '咖喱饭', '牛肉面',
+    '酸辣粉', '冒菜', '三明治', '韩式拌饭', '部队锅', '石锅拌饭',
+    '炸鸡', '烤鱼', '小龙虾'
+  ];
+
+  const SUGGESTION_CHIPS = SURPRISE_POOL.slice(0, 24);
+
   const foodInput = document.getElementById('foodInput');
   const addBtn = document.getElementById('addBtn');
   const foodList = document.getElementById('foodList');
   const countEl = document.getElementById('count');
   const chooseBtn = document.getElementById('chooseBtn');
+  const surpriseBtn = document.getElementById('surpriseBtn');
   const resultEl = document.getElementById('result');
+  const chipsEl = document.getElementById('suggestionChips');
+  const resetBtn = document.getElementById('resetBtn');
+  const clearBtn = document.getElementById('clearBtn');
 
-  let foods = [];
+  function loadFoods() {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored === null) return [...DEFAULT_FOODS];
+      const parsed = JSON.parse(stored);
+      return Array.isArray(parsed) ? parsed : [...DEFAULT_FOODS];
+    } catch {
+      return [...DEFAULT_FOODS];
+    }
+  }
 
-  function render() {
+  function saveFoods() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(foods));
+    } catch {}
+  }
+
+  let foods = loadFoods();
+
+  function renderList() {
     foodList.innerHTML = '';
     foods.forEach((food, idx) => {
       const li = document.createElement('li');
@@ -243,6 +375,7 @@
       btn.title = '删除';
       btn.addEventListener('click', () => {
         foods.splice(idx, 1);
+        saveFoods();
         render();
       });
 
@@ -255,6 +388,28 @@
     chooseBtn.disabled = foods.length === 0;
   }
 
+  function renderChips() {
+    chipsEl.innerHTML = '';
+    SUGGESTION_CHIPS.forEach(food => {
+      const btn = document.createElement('button');
+      btn.className = 'chip';
+      btn.textContent = food;
+      btn.disabled = foods.includes(food);
+      btn.addEventListener('click', () => {
+        if (foods.includes(food)) return;
+        foods.push(food);
+        saveFoods();
+        render();
+      });
+      chipsEl.appendChild(btn);
+    });
+  }
+
+  function render() {
+    renderList();
+    renderChips();
+  }
+
   function addFood() {
     const value = foodInput.value.trim();
     if (!value) return;
@@ -264,31 +419,52 @@
     }
     foods.push(value);
     foodInput.value = '';
+    saveFoods();
     render();
     foodInput.focus();
   }
 
-  function chooseFood() {
-    if (foods.length === 0) return;
+  function setRolling(text) {
+    resultEl.innerHTML = '';
+    const div = document.createElement('div');
+    div.className = 'result-rolling';
+    div.textContent = text;
+    resultEl.appendChild(div);
+  }
+
+  function setFinal(food) {
+    resultEl.innerHTML = '';
+    const wrapper = document.createElement('div');
+    wrapper.className = 'result-final';
+    const label = document.createElement('div');
+    label.className = 'result-label';
+    label.textContent = 'OH MY GOD！吃它！！！';
+    const foodEl = document.createElement('div');
+    foodEl.className = 'result-food';
+    foodEl.textContent = food;
+    wrapper.appendChild(label);
+    wrapper.appendChild(foodEl);
+    resultEl.appendChild(wrapper);
+  }
+
+  function rollAndShow(pool) {
+    if (pool.length === 0) return;
     chooseBtn.disabled = true;
-    resultEl.innerHTML = '<div class="result-rolling">🎲 请稍等...</div>';
+    surpriseBtn.disabled = true;
+    setRolling('🎲 请稍等...');
 
     let ticks = 0;
     const maxTicks = 14;
     const rolling = setInterval(() => {
-      const pick = foods[Math.floor(Math.random() * foods.length)];
-      resultEl.innerHTML = `<div class="result-rolling">🎲 ${pick}</div>`;
+      const pick = pool[Math.floor(Math.random() * pool.length)];
+      setRolling('🎲 ' + pick);
       ticks++;
       if (ticks >= maxTicks) {
         clearInterval(rolling);
-        const final = foods[Math.floor(Math.random() * foods.length)];
-        resultEl.innerHTML = `
-          <div class="result-final">
-            <div class="result-label">OH MY GOD！吃它！！！</div>
-            <div class="result-food">${final}</div>
-          </div>
-        `;
-        chooseBtn.disabled = false;
+        const final = pool[Math.floor(Math.random() * pool.length)];
+        setFinal(final);
+        chooseBtn.disabled = foods.length === 0;
+        surpriseBtn.disabled = false;
       }
     }, 80);
   }
@@ -297,7 +473,26 @@
   foodInput.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') addFood();
   });
-  chooseBtn.addEventListener('click', chooseFood);
+
+  chooseBtn.addEventListener('click', () => rollAndShow(foods));
+  surpriseBtn.addEventListener('click', () => rollAndShow(SURPRISE_POOL));
+
+  resetBtn.addEventListener('click', () => {
+    if (confirm('恢复默认列表？当前列表会被替换。')) {
+      foods = [...DEFAULT_FOODS];
+      saveFoods();
+      render();
+    }
+  });
+
+  clearBtn.addEventListener('click', () => {
+    if (foods.length === 0) return;
+    if (confirm('清空所有食物？')) {
+      foods = [];
+      saveFoods();
+      render();
+    }
+  });
 
   render();
 </script>
